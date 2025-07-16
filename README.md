@@ -1,8 +1,6 @@
 To Do:
 
 1. are traces written to experiment with/without inference talbes enabled?  This is in flight..everything is moving to dedicated servers.
-3. clean up.
-4. investigate dspy agents.
 5. illustrate searching traces
 6. illustrate versioning of eval table
 8. create a setup notebook to create catalogs and schemas
