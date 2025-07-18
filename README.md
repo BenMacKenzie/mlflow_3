@@ -16,7 +16,7 @@ Illustrates the asscociating a deployment job with a model
 
 
 
-Notes
+## Notes
 
 1. use of traces, evaluate and human feedback works well.
 2. new model-centric data model / UI works well.
@@ -25,7 +25,9 @@ Notes
 5. need to set experiment explicitly for feedback session to work if notebook is in a git folder.
 
 
-To Do:
+
+
+## To Do:
 
 1. are traces written to experiment with/without inference talbes enabled?  This is in flight..everything is moving to dedicated servers.
 2. illustrate searching traces
