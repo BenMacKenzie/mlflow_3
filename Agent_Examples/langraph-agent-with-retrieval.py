@@ -64,7 +64,7 @@
 # MAGIC ############################################
 # MAGIC # Define your LLM endpoint and system prompt
 # MAGIC ############################################
-# MAGIC LLM_ENDPOINT_NAME = "databricks-claude-3-7-sonnet"
+# MAGIC LLM_ENDPOINT_NAME = "databricks-gemma-3-12b"
 # MAGIC llm = ChatDatabricks(endpoint=LLM_ENDPOINT_NAME)
 # MAGIC
 # MAGIC system_prompt = """Use the retrieved context to answer questions.  Do not make anything up that isn't in the context"""
@@ -219,7 +219,7 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
-from agent import AGENT
+from langraph_agent import AGENT
 
 AGENT.predict({"messages": [{"role": "user", "content": "What is mlflow?"}]})
 
@@ -247,7 +247,7 @@ AGENT.predict({"messages": [{"role": "user", "content": "What is lakeflow?"}]})
 
 # Determine Databricks resources to specify for automatic auth passthrough at deployment time
 import mlflow
-from agent import LLM_ENDPOINT_NAME, tools
+from langraph_agent import LLM_ENDPOINT_NAME, tools
 from databricks_langchain import VectorSearchRetrieverTool
 from mlflow.models.resources import DatabricksFunction, DatabricksServingEndpoint
 from pkg_resources import get_distribution
@@ -296,6 +296,10 @@ with mlflow.start_run():
 
 # COMMAND ----------
 
+model = mlflow.pyfunc.load_model(logged_agent_info.model_uri)
+
+# COMMAND ----------
+
 import mlflow
 from mlflow.genai.scorers import RelevanceToQuery, Safety, RetrievalRelevance, RetrievalGroundedness
 
@@ -303,10 +307,7 @@ eval_dataset = [
     {
         "inputs": {
             "messages": [
-                {
-                    "role": "system",
-                    "content": "Use the retrieved context to answer questions.  Do not make anything up that isn't in the context"
-                },
+                
                 {
                     "role": "user",
                     "content": "what is mlflow?"
@@ -318,10 +319,7 @@ eval_dataset = [
     {
         "inputs": {
             "messages": [
-                {
-                    "role": "system",
-                    "content": "Use the retrieved context to answer questions.  Do not make anything up that isn't in the context"
-                },
+                
                 {
                     "role": "user",
                     "content": "what is lakeflow?"
@@ -335,11 +333,49 @@ eval_dataset = [
 
 eval_results = mlflow.genai.evaluate(
     data=eval_dataset,
-    predict_fn=lambda messages: AGENT.predict({"messages": messages}),
+    predict_fn=lambda messages: model.predict({"messages": messages}),
     scorers=[RelevanceToQuery(), Safety()], # add more scorers here if they're applicable
 )
 
 # Review the evaluation results in the MLfLow UI (see console output)
+
+# COMMAND ----------
+
+# MAGIC %run ../setup
+
+# COMMAND ----------
+
+import mlflow
+traces = mlflow.search_traces()
+
+
+# COMMAND ----------
+
+import mlflow.genai.datasets
+
+evaluation_dataset_table_name = "langraph-eval"
+
+UC_TABLE_NAME = f"{agents_schema}.{evaluation_dataset_table_name}"
+
+
+
+eval_dataset = mlflow.genai.datasets.create_dataset(
+    uc_table_name=UC_TABLE_NAME,
+)
+eval_dataset.merge_records(traces)
+
+
+# note that even if you have just created it by un-commenting the above you need to read it in again for it to work with mlflow.genai.evaluate.  I think this is a bug
+
+eval_dataset = mlflow.genai.get_dataset(UC_TABLE_NAME)
+
+# COMMAND ----------
+
+eval_results = mlflow.genai.evaluate(
+    data=eval_dataset,
+    predict_fn=lambda messages: model.predict({"messages": messages}),
+    scorers=[RelevanceToQuery(), Safety()], # add more scorers here if they're applicable
+)
 
 # COMMAND ----------
 
@@ -364,13 +400,9 @@ mlflow.models.predict(
 
 # COMMAND ----------
 
-mlflow.set_registry_uri("databricks-uc")
 
-# TODO: define the catalog, schema, and model name for your UC model
-catalog = ""
-schema = ""
-model_name = ""
-UC_MODEL_NAME = f"{catalog}.{schema}.{model_name}"
+model_name = "langraph-with-retrieval"
+UC_MODEL_NAME = f"{agents_schema}.{model_name}"
 
 # register the model to UC
 uc_registered_model_info = mlflow.register_model(

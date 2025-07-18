@@ -1,19 +1,33 @@
-To Do:
 
-1. are traces written to experiment with/without inference talbes enabled?  This is in flight..everything is moving to dedicated servers.
-5. illustrate searching traces
-6. illustrate versioning of eval table
-8. create a setup notebook to create catalogs and schemas
-9. add reference for each section.
-10. better approach for generating traces.  Use list and search for traces.  when should you use one vs the other?
-11. Use better scorers...
-12. Where should the system prompt go....shouldn't it be a ChatMessage? rather than added to user question?
+## Quickstart.
+
+Examples illustrating agent evaluation and human feedback.
 
 
-take-aways
+## Agent_Examples
+
+Examples illustrating agent evaluation on 'full' agents that can be registered in Unity Catalog (the simple functions in Quickstart cannot be registered..or at least I can't figure out how to get the signature right.)
+
+
+## Traditional ML with Deployment Job
+
+Illustrates the asscociating a deployment job with a model
+
+
+
+
+Notes
 
 1. use of traces, evaluate and human feedback works well.
 2. new model-centric data model / UI works well.
-3. it's pretty complex to author an agent by hand.  determinitic agents seem to be deprecated.    See https://docs.databricks.com/aws/en/generative-ai/agent-framework/author-agent
+3. it's pretty complex to author an agent by hand.  deterministic agents seem to be deprecated.    See https://docs.databricks.com/aws/en/generative-ai/agent-framework/author-agent
+4. bug in datasets requires to to re-read prior to using in mlflow.genai.evaluate
+5. need to set experiment explicitly for feedback session to work if notebook is in a git folder.
 
 
+To Do:
+
+1. are traces written to experiment with/without inference talbes enabled?  This is in flight..everything is moving to dedicated servers.
+2. illustrate searching traces
+3. illustrate versioning of eval table
+4. Use better scorers in examples
