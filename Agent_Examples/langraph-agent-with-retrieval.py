@@ -221,7 +221,7 @@ dbutils.library.restartPython()
 
 from langraph_agent import AGENT
 
-AGENT.predict({"messages": [{"role": "user", "content": "What is mlflow?"}]})
+AGENT.predict({"messages": [{"role": "user", "content": "What is mlflow ***3.0***?"}]})
 
 # COMMAND ----------
 
@@ -233,6 +233,7 @@ for event in AGENT.predict_stream(
 # COMMAND ----------
 
 AGENT.predict({"messages": [{"role": "user", "content": "What is lakeflow?"}]})
+
 
 # COMMAND ----------
 
@@ -353,14 +354,14 @@ traces = mlflow.search_traces()
 
 import mlflow.genai.datasets
 
-evaluation_dataset_table_name = "langraph-eval"
+evaluation_dataset_table_name = "langraph_eval"
 
 UC_TABLE_NAME = f"{agents_schema}.{evaluation_dataset_table_name}"
 
 
 
 eval_dataset = mlflow.genai.datasets.create_dataset(
-    uc_table_name=UC_TABLE_NAME,
+    uc_table_name="benmackenzie_catalog.agents.langraph_eval",
 )
 eval_dataset.merge_records(traces)
 
@@ -417,7 +418,7 @@ uc_registered_model_info = mlflow.register_model(
 # COMMAND ----------
 
 from databricks import agents
-agents.deploy(UC_MODEL_NAME, uc_registered_model_info.version, tags = {"endpointSource": "playground"})
+agents.deploy(UC_MODEL_NAME, uc_registered_model_info.version, tags = {"endpointSource": "notebook"})
 
 # COMMAND ----------
 
