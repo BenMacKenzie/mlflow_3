@@ -1,12 +1,26 @@
+# References
 
-## Quickstart.
+https://docs.databricks.com/aws/en/mlflow3/genai/
+
+
+
+
+## 01 Agent Eval.
 
 Examples illustrating agent evaluation and human feedback.
 
 
-## Agent_Examples
+## 02 RAG Agent Example
 
-Examples illustrating agent evaluation on 'full' agents that can be registered in Unity Catalog (the simple functions in Quickstart cannot be registered..or at least I can't figure out how to get the signature right.)
+Example from playground export with eval and vector index creation code.
+
+#### To Do
+
+Update vector index with Scott's version (in sql)
+
+## 03 Other Agent Examples
+
+Difference between ChatAgent and ResponseAgent
 
 
 ## Traditional ML with Deployment Job
@@ -18,13 +32,6 @@ Illustrates the asscociating a deployment job with a model
 
 ## Notes
 
-1. use of traces, evaluate and human feedback works well.
-2. new model-centric data model / UI works well.
-3. it's pretty complex to author an agent by hand.  deterministic agents seem to be deprecated.    See https://docs.databricks.com/aws/en/generative-ai/agent-framework/author-agent
-4. bug in datasets requires to to re-read prior to using in mlflow.genai.evaluate
-5. need to set experiment explicitly for feedback session to work if notebook is in a git folder.
-
-
 
 
 ## To Do:
@@ -33,3 +40,17 @@ Illustrates the asscociating a deployment job with a model
 2. illustrate searching traces
 3. illustrate versioning of eval table
 4. Use better scorers in examples
+5. illustrate difference between running eval with a logged model vs model that is only in memory.  illustrate running evals inside a mlflow run
+6. prompt registry
+7. what is a data set object?
+8. autolog vs annotation
+9. what does this page mean? https://docs.databricks.com/aws/en/mlflow3/genai/tracing/prod-tracing.  And following? https://docs.databricks.com/aws/en/mlflow3/genai/tracing/prod-tracing#log-traces-to-tables
+I think monitoring tab is disabled to archive to delta table follow: https://docs.databricks.com/aws/en/mlflow3/genai/eval-monitor/production-monitoring#archive-traces
+
+
+assessments vs scorers
+create labeleling session through UI
+create eval data set using UI
+
+
+
