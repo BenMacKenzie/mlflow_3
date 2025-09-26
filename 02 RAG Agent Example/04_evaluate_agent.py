@@ -19,6 +19,10 @@
 
 # COMMAND ----------
 
+mlflow.set_experiment("/Users/ben.mackenzie@databricks.com/rag_agent")
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC select * from benmackenzie_catalog.mlflow3.gisa_manual_evalaution_s
 
@@ -36,14 +40,14 @@ from mlflow.genai.scorers import RelevanceToQuery, Safety, RetrievalRelevance, R
 
 eval_dataset = mlflow.genai.create_dataset('benmackenzie_catalog.mlflow3.gisa_manual_evalaution_ds')
 data = spark.table('benmackenzie_catalog.mlflow3.gisa_manual_evalaution_s')
-eval_dataset.merge_records(data)
+eval_dataset = eval_dataset.merge_records(data) #does not update in place
 
 # COMMAND ----------
 
-
-eval_dataset = mlflow.genai.get_dataset('benmackenzie_catalog.mlflow3.gisa_manual_evalaution_ds')
-
-
+# MAGIC %md
+# MAGIC ##Nota Bene
+# MAGIC
+# MAGIC Schema in dataset contains additional info
 
 # COMMAND ----------
 
@@ -52,17 +56,14 @@ eval_dataset = mlflow.genai.get_dataset('benmackenzie_catalog.mlflow3.gisa_manua
 
 # COMMAND ----------
 
-import yaml
 import mlflow
 
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+catalog = "benmackenzie_catalog"
+schema = "mlflow3"
+model_name = "gisa_rag_agent"
+UC_MODEL_NAME = f"{catalog}.{schema}.{model_name}"
 
-config = config['agent']
-agent_name = config['agent_name']
-uc_model_name = config["uc_model_name"]
-
-model = mlflow.pyfunc.load_model(f"models:/{uc_model_name}/1")
+model = mlflow.pyfunc.load_model(f"models:/{UC_MODEL_NAME}/1")
 
 # COMMAND ----------
 
@@ -81,13 +82,14 @@ model = mlflow.pyfunc.load_model(f"models:/{uc_model_name}/1")
 
 # COMMAND ----------
 
-#i think the name of the predict function parameter actually pick out an element in the dataset.
 
-eval_results = mlflow.genai.evaluate(
-    data=eval_dataset,
-    predict_fn=lambda messages: model.predict({"input": messages}),
-    scorers=[RelevanceToQuery(), Safety(), Correctness(), RetrievalRelevance(), RetrievalGroundedness()]
-)
+
+with mlflow.start_run(run_name="eval on dataset 1"):
+    eval_results = mlflow.genai.evaluate(
+        data=eval_dataset,
+        predict_fn=lambda messages: model.predict({"input": messages}),
+        scorers=[RelevanceToQuery(), Safety(), Correctness(), RetrievalRelevance(), RetrievalGroundedness()]
+    )
 
 # COMMAND ----------
 
@@ -101,10 +103,10 @@ def predict_fn(messages):
     if hasattr(messages, "tolist"):
         messages = messages.tolist()
     print({"input": messages})
-    return AGENT.predict({"input": messages})
+    return model.predict({"input": messages})
 
 eval_results = mlflow.genai.evaluate(
-    data=eval_df,
+    data=eval_dataset,
     predict_fn=predict_fn,
     scorers=[RelevanceToQuery(), Safety(), Correctness(), RetrievalRelevance(), RetrievalGroundedness()]
 )
@@ -170,9 +172,9 @@ import time
 
 
 
-# eval_dataset = mlflow.genai.datasets.create_dataset(
-#     uc_table_name=f"benmackenzie_catalog.mlflow3.gisa_manual_evalaution_ds_2",
-# )
+eval_dataset = mlflow.genai.datasets.create_dataset(
+    uc_table_name=f"benmackenzie_catalog.mlflow3.gisa_manual_evalaution_ds_2",
+)
 
 
 # 2. Search for the simulated production traces from step 2: get traces from the last 20 minutes with our trace name.
@@ -186,7 +188,7 @@ traces = mlflow.search_traces(
 print(f"Found {len(traces)} successful traces from beta test")
 
 # 3. Add the traces to the evaluation dataset
-eval_dataset.merge_records(traces)
+eval_dataset = eval_dataset.merge_records(traces)
 print(f"Added {len(traces)} records to evaluation dataset")
 
 # Preview the dataset

@@ -14,9 +14,6 @@ Examples illustrating agent evaluation and human feedback.
 
 Example from playground export with eval and vector index creation code.
 
-#### To Do
-
-Update vector index with Scott's version (in sql)
 
 ## 03 Other Agent Examples
 
@@ -26,8 +23,6 @@ Difference between ChatAgent and ResponseAgent
 ## Traditional ML with Deployment Job
 
 Illustrates the asscociating a deployment job with a model
-
-
 
 
 ## Notes

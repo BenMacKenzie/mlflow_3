@@ -125,7 +125,7 @@ with mlflow.start_run() as evaluation_run:
 
 # COMMAND ----------
 
-mlflow.register_model(model_info.model_uri, name="benmackenzie_catalog.default.iris_elastic")
+mlflow.register_model(model_info.model_uri, name="benmackenzie_catalog.mlflow3.iris_elastic")
 
 # COMMAND ----------
 

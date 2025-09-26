@@ -17,6 +17,10 @@ EVALUATION_SET_FQN =  config['eval']['synthetic_evaluation_set_fqn']
 
 # COMMAND ----------
 
+EVALUATION_SET_FQN
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC select path as doc_uri, CAST(pages AS STRING) as content from benmackenzie_catalog.mlflow3.parsed_gisa_document
 
@@ -43,7 +47,7 @@ question_guidelines = """
 
 evals = generate_evals_df(
     docs=docs,
-    num_evals=25,
+    num_evals=5,
     agent_description=agent_description,
     question_guidelines=question_guidelines,
 )

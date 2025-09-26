@@ -16,16 +16,16 @@
 # COMMAND ----------
 
 # REQUIRED: Update these values as necessary
-model_name = "ml_demo.demo_1.iris_elastic" # The name of the already created UC Model
+model_name = "benmackenzie_catalog.mlflow3.iris_elastic" # The name of the already created UC Model
 model_version = "1" # The version of the already created UC Model
-job_name = "iris_elastic_deployment_job" # The desired name of the deployment job
+job_name = "mlflow3_iris_elastic_deployment_job" # The desired name of the deployment job
 
 # REQUIRED: Create notebooks for each task and populate the notebook path here, replacing the INVALID PATHS LISTED BELOW.
 # These paths should correspond to where you put the notebooks templated from the example deployment jobs template notebook
 # in your Databricks workspace. Choose an evaluation notebook based on if the model is for GenAI or classic ML
-evaluation_notebook_path = "/Workspace/ML/mlflow_workshop/deployment_job/evaluation"
-approval_notebook_path = "/Workspace/ML/mlflow_workshop/deployment_job/approval"
-deployment_notebook_path = "/Workspace/ML/mlflow_workshop/deployment_job/deployment"
+evaluation_notebook_path = "/Workspace/Users/ben.mackenzie@databricks.com/mlflow_3/05 Traditional ML with Deployment Job/evaluation"
+approval_notebook_path = "/Workspace/Users/ben.mackenzie@databricks.com/mlflow_3/05 Traditional ML with Deployment Job/approval"
+deployment_notebook_path = "/Workspace/Users/ben.mackenzie@databricks.com/mlflow_3/05 Traditional ML with Deployment Job/deployment"
 
 # COMMAND ----------
 

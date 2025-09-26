@@ -61,7 +61,7 @@ agent:
 eval:
   
   review_app_evaluation_set_fqn: benmackenzie_catalog.mlflow3.gisa_manual_evalaution_r
-  synthetic_evaluation_set_fqn: benmackenzie_catalog.mlfow3.gisa_manual_evalaution_s
+  synthetic_evaluation_set_fqn: benmackenzie_catalog.mlflow3.gisa_manual_evalaution_s
   
 
 mlflow:

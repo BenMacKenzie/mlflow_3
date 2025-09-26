@@ -30,6 +30,11 @@
 
 # COMMAND ----------
 
+import mlflow
+mlflow.set_experiment("/Users/ben.mackenzie@databricks.com/rag_agent")
+
+# COMMAND ----------
+
 # MAGIC %%writefile agent.py
 # MAGIC import json
 # MAGIC from typing import Any, Callable, Generator, Optional
@@ -370,7 +375,7 @@ input_example = {
     ]
 }
 
-with mlflow.start_run():
+with mlflow.start_run(run_name="agent 1"):
     logged_agent_info = mlflow.pyfunc.log_model(
         name="agent",
         python_model="agent.py",
@@ -423,26 +428,19 @@ eval_dataset = [
                 {
                     "role": "user",
                     "content": "what are Role and Responsibilities of Insurers?"
-                },
-                {
-                    "role": "assistant",
-                    "content": "The role and responsibilities of insurers in the context of the Automobile Statistical Plan Manual, including Facility Association Underwriting Information Plan, typically involve:\n\n1. **Risk Assessment and Underwriting**: Insurers assess the risk profile of potential policyholders and determine the premium rates based on various factors such as driving history, vehicle type, and location.\n\n2. **Policy Issuance and Administration**: Insurers issue policies to eligible applicants, manage policy renewals, and handle any changes to policy terms or conditions.\n\n3. **Claims Handling**: Insurers are responsible for processing and settling claims made by policyholders. This includes investigating accidents, determining liability, and providing compensation for damages or losses.\n\n4. **Data Collection and Reporting**: Insurers collect data on accidents, claims, and policyholder information, which is used to update premium rates, inform underwriting decisions, and comply with regulatory requirements.\n\n5. **Compliance with Regulatory Requirements**: Insurers must adhere to laws, regulations, and industry standards governing automobile insurance, including those related to the Automobile Statistical Plan Manual and Facility Association Underwriting Information Plan.\n\n6. **Customer Service**: Insurers provide support and services to policyholders, including answering questions, resolving issues, and offering guidance on insurance-related matters.\n\nThese roles and responsibilities are crucial in ensuring that insurers operate efficiently, provide fair and reasonable coverage to policyholders, and contribute to the overall stability of the automobile insurance market."
-                },
-                {
-                    "role": "user",
-                    "content": "What steps are involved in processing and settling claims made by policyholders?"
                 }
+               
             ]
         },
         "expected_response": None
     }
 ]
-
-eval_results = mlflow.genai.evaluate(
-    data=eval_dataset,
-    predict_fn=lambda input: AGENT.predict({"input": input}),
-    scorers=[RelevanceToQuery(), Safety()], # add more scorers here if they're applicable
-)
+with mlflow.start_run(run_name="eval 1"):
+    eval_results = mlflow.genai.evaluate(
+        data=eval_dataset,
+        predict_fn=lambda input: AGENT.predict({"input": input}),
+        scorers=[RelevanceToQuery(), Safety()], # add more scorers here if they're applicable
+    )
 
 # Review the evaluation results in the MLfLow UI (see console output)
 
@@ -475,7 +473,7 @@ mlflow.set_registry_uri("databricks-uc")
 # TODO: define the catalog, schema, and model name for your UC model
 catalog = "benmackenzie_catalog"
 schema = "mlflow3"
-model_name = "gisa_agent"
+model_name = "gisa_rag_agent"
 UC_MODEL_NAME = f"{catalog}.{schema}.{model_name}"
 
 # register the model to UC
